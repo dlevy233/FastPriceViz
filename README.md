@@ -25,6 +25,7 @@ A Python library for efficient visualization of high-frequency time series data.
 
 1. Generate Test Data: Run `python data/generate_test_data.py` to create sample data.
 2. Visualize Data: Use the API to load, downsample, and plot time series data.
+3. Run Example: Execute `python examples/example_market_data.py` to see a sample visualization of AAPL stock price data.
 
 ## Project Structure
 
