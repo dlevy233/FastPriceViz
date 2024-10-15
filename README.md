@@ -17,8 +17,8 @@ A Python library for efficient visualization of high-frequency time series data.
 * Install Dependencies and the Package
 
     ```bash
-   * pip install -r requirements.txt
-    *pip install -e .
+    pip install -r requirements.txt
+    pip install -e .
     ```
 
 ## Usage
