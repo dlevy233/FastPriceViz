@@ -12,24 +12,14 @@ A Python library for efficient visualization of high-frequency time series data.
 
 ## Installation
 
-### Clone the Repository
+* Clone the Repository
+* Create and Activate a Virtual Environment
+* Install Dependencies and the Package
 
-bash
-Copy code
-git clone https://github.com/dlevy233/TimeSeriesViz.git
-cd TimeSeriesViz
-### Create and Activate a Virtual Environment
-
-bash
-Copy code
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-### Install Dependencies and the Package
-
-bash
-Copy code
-pip install -r requirements.txt
-pip install -e .
+    ```bash
+   * pip install -r requirements.txt
+    *pip install -e .
+    ```
 
 ## Usage
 
