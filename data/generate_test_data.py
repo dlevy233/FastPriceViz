@@ -3,10 +3,10 @@ import numpy as np
 import os
 
 def generate_price_data(start_price, seed):
-    start_timestamp = pd.Timestamp('2024-05-01 09:30:00-0400', tz='America/New_York')
-    end_timestamp = pd.Timestamp('2024-05-01 09:40:00-0400', tz='America/New_York')
+    start_timestamp = pd.Timestamp('2024-05-01 09:30:00.000-0400', tz='America/New_York')
+    end_timestamp = pd.Timestamp('2024-05-01 09:40:00.000-0400', tz='America/New_York')
 
-    datetime_index = pd.date_range(start=start_timestamp, end=end_timestamp, freq='10U')
+    datetime_index = pd.date_range(start=start_timestamp, end=end_timestamp, freq='1ms')
     np.random.seed(seed)
     price_changes = np.random.normal(0, 0.00001, len(datetime_index))
     price_changes = pd.Series(price_changes, index=datetime_index)

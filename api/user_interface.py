@@ -9,7 +9,7 @@ class Figure:
     def add_plot(self, plot, position='overlap'):
         self.plots.append((plot, position))
 
-    def show(self):
+    def show(self, return_layout=False):
         overlapped_plots = []
         below_plots = []
         side_plots = []
@@ -43,4 +43,7 @@ class Figure:
         else:
             layout = main_column
 
-        show(layout)
+        if return_layout:
+            return layout
+        else:
+            show(layout)

@@ -3,15 +3,13 @@ from visualization.line_plot import LinePlot
 from api.user_interface import Figure
 from bokeh.models import ColumnDataSource
 
-def create_market_data(stock_name, start_time, end_time):
+def create_market_data(stock_name, start_time, end_time, resolution='1s'):
     data = MarketData(
         stock_name=stock_name,
         datetime_range=(start_time, end_time),
         columns=['price']
     )
-    data.load_data()
-    data.downsample(rule='1s')
-    return ColumnDataSource(data.data.compute())
+    return ColumnDataSource(data.get_data(resolution=resolution).compute())
 
 def main():
     # Initialize Data Sources
@@ -41,6 +39,12 @@ def main():
     plot3 = LinePlot(title='AMZN (Side)', x_axis_label='Time', y_axis_label='Price')
     plot3.add_line(amzn_source, x_axis='timestamp', y_axis='price', color='orange', legend_label='AMZN')
     fig.add_plot(plot3, position='side')
+
+    # Example 4: Different resolution
+    plot4 = LinePlot(title='AAPL (High Resolution)', x_axis_label='Time', y_axis_label='Price')
+    aapl_high_res = create_market_data('AAPL', start_time, end_time, resolution='100ms')
+    plot4.add_line(aapl_high_res, x_axis='timestamp', y_axis='price', color='purple', legend_label='AAPL (High Res)')
+    fig.add_plot(plot4, position='below')
 
     # Display Figure
     fig.show()

@@ -1,47 +1,61 @@
 # TimeSeriesViz
 
-A Python library for efficient visualization of high-frequency time series data.
+A Python library for efficient visualization of high-frequency time series data, designed to handle large-scale financial market data with millisecond precision.
 
 ## Features
 
-- **Flexible API**: Customize visualizations for various data sources
-- **Distributed Computing**: Use Dask to handle large datasets efficiently
-- **Interactive Plots**: Create dynamic visualizations with Bokeh
-- **Downsampling**: Optimize performance with efficient data reduction
-- **Timezone Support**: Proper handling of timezone-aware datetime data
-- **Caching**: Keep recently accessed time ranges in memory for faster repeated access
+- **High-Frequency Data Support**: Handle time series data with granularity down to 1 millisecond.
+- **Large-Scale Data Processing**: Efficiently manage datasets up to 100 million rows and 1000 columns.
+- **Flexible API**: Customize visualizations for various data sources and layouts.
+- **Distributed Computing**: Utilize Dask for efficient handling of large datasets.
+- **Interactive Plots**: Create dynamic visualizations with Bokeh.
+- **Adaptive Downsampling**: Optimize performance with efficient data reduction based on zoom levels.
+- **Timezone Support**: Proper handling of timezone-aware datetime data.
+- **Caching System**: Keep recently accessed time ranges in memory for faster repeated access.
+- **Multiple Plot Layouts**: Support for overlapped, stacked, and side-by-side plot arrangements.
 
 ## Installation
 
-* Clone the Repository
-* Create and Activate a Virtual Environment
-* Install Dependencies and the Package
+1. Clone the Repository:
+   ```
+   git clone https://github.com/yourusername/TimeSeriesViz.git
+   cd TimeSeriesViz
+   ```
 
-    ```bash
-    pip install -r requirements.txt
-    pip install -e .
-    ```
+2. Create and Activate a Virtual Environment:
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
+
+3. Install Dependencies and the Package:
+   ```
+   pip install -r requirements.txt
+   pip install -e .
+   ```
 
 ## Usage
 
-1. Generate Test Data: Run `python data/generate_test_data.py` to create sample data.
-2. Run Example: Execute `python examples/example_market_data.py` to see a sample visualization of stock price data.
+1. Generate Test Data:
+   ```
+   python data/generate_test_data.py
+   ```
+   This creates sample data for AAPL, GOOGL, MSFT, and AMZN stocks with millisecond precision.
+
+2. Run Example:
+   ```
+   python examples/example_market_data.py
+   ```
+   This demonstrates various visualization capabilities, including different plot layouts and resolutions.
 
 ## API Design and Usage
-
-The TimeSeriesViz API is designed to be flexible and easy to use. Here's an overview of the main components:
 
 ### Data Sources
 
 - `MarketData`: Loads and processes market data from Parquet files, with caching for improved performance.
   ```python
   data = MarketData(stock_name='AAPL', datetime_range=(start_time, end_time), columns=['price'])
-  data.load_data()  # This will use cache if available
-  data.downsample(rule='1s')
-
-  # Optionally, manage the cache
-  MarketData.clear_cache()
-  MarketData.set_cache_size(10)
+  df = data.get_data(resolution='100ms')  # Get data at 100ms resolution
   ```
 
 ### Visualization
@@ -54,7 +68,7 @@ The TimeSeriesViz API is designed to be flexible and easy to use. Here's an over
 
 ### Figure Composition
 
-- `Figure`: Combines multiple plots into a single figure.
+- `Figure`: Combines multiple plots into a single figure with various layout options.
   ```python
   fig = Figure()
   fig.add_plot(plot1, position='overlap')
@@ -70,6 +84,14 @@ The `Figure` class supports three layout options:
 - `'below'`: Plots are stacked vertically
 - `'side'`: Plots are placed side by side
 
+### Caching and Performance
+
+- Manage the cache size:
+  ```python
+  MarketData.set_cache_size(10)  # Set cache to hold 10 items
+  MarketData.clear_cache()  # Clear the entire cache
+  ```
+
 ## Project Structure
 
 - `data/`: Data generation and source classes
@@ -81,3 +103,22 @@ The `Figure` class supports three layout options:
 - `utils/`: Helper functions and utilities
 - `tests/`: Unit and integration tests
 - `examples/`: Example scripts demonstrating usage
+
+## Performance Considerations
+
+- The library uses Dask for distributed computing, allowing it to handle large datasets efficiently.
+- Adaptive downsampling is implemented to optimize performance at different zoom levels.
+- Caching of recently accessed data ranges improves response times for repeated queries.
+- When visualizing, it's acceptable to miss some data points (e.g., spikes) in favor of better performance, especially at higher zoom levels.
+
+## Testing
+
+To run the test suite, use the following command from the project root directory:
+```
+python -m unittest discover tests
+```
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
