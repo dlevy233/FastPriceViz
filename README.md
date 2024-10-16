@@ -46,16 +46,20 @@ A Python library for efficient visualization of high-frequency time series data,
    ```
    python examples/example_market_data.py
    ```
-   This demonstrates various visualization capabilities, including different plot layouts and resolutions.
+   This demonstrates various visualization capabilities, including:
+   - Overlapped plots (AAPL and GOOGL)
+   - Plots below (MSFT)
+   - Plots to the side (AMZN)
+   - Zoomed-in view with adaptive resolution (AAPL 1-minute zoom)
 
 ## API Design and Usage
 
 ### Data Sources
 
-- `MarketData`: Loads and processes market data from Parquet files, with caching for improved performance.
+- `MarketData`: Loads and processes market data from Parquet files, with caching and adaptive downsampling for improved performance.
   ```python
   data = MarketData(stock_name='AAPL', datetime_range=(start_time, end_time), columns=['price'])
-  df = data.get_data(resolution='100ms')  # Get data at 100ms resolution
+  df = data.get_data(view_range=(zoom_start, zoom_end))  # Get data with adaptive resolution
   ```
 
 ### Visualization
@@ -81,8 +85,19 @@ A Python library for efficient visualization of high-frequency time series data,
 
 The `Figure` class supports three layout options:
 - `'overlap'`: Plots are overlaid on the same axes
-- `'below'`: Plots are stacked vertically
-- `'side'`: Plots are placed side by side
+- `'below'`: Plots are stacked vertically, sharing the same x-axis
+- `'side'`: Plots are placed side by side, each with its own x and y axes
+
+### Adaptive Downsampling
+
+The `MarketData` class now supports adaptive downsampling based on the view range:
+- For 1 minute or less: 100ms resolution
+- For 5 minutes or less: 500ms resolution
+- For 1 hour or less: 1s resolution
+- For 1 day or less: 1min resolution
+- For more than 1 day: 5min resolution
+
+This ensures optimal performance and data representation at different zoom levels.
 
 ### Caching and Performance
 

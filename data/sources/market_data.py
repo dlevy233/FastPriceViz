@@ -46,14 +46,34 @@ class MarketData(DataSource):
                 # Remove the least recently used item
                 self._cache.popitem(last=False)
 
-    def get_data(self, columns=None, resolution='1s'):
+    def get_data(self, columns=None, resolution='1s', view_range=None):
         if columns is None:
             columns = self.columns
         
-        if self.data is None or self._current_resolution != resolution:
-            self.load_data(resolution)
-        
-        return self.data[columns]
+        if view_range is not None:
+            adaptive_resolution = self._calculate_adaptive_resolution(view_range)
+            if self.data is None or self._current_resolution != adaptive_resolution:
+                self.load_data(adaptive_resolution)
+            data = self.data.loc[view_range[0]:view_range[1]]
+        else:
+            if self.data is None or self._current_resolution != resolution:
+                self.load_data(resolution)
+            data = self.data
+
+        return data[columns]
+
+    def _calculate_adaptive_resolution(self, view_range):
+        view_duration = (view_range[1] - view_range[0]).total_seconds()
+        if view_duration <= 60:  # 1 minute or less
+            return '100ms'
+        elif view_duration <= 300:  # 5 minutes or less
+            return '500ms'
+        elif view_duration <= 3600:  # 1 hour or less
+            return '1s'
+        elif view_duration <= 86400:  # 1 day or less
+            return '1min'
+        else:
+            return '5min'
 
     def downsample(self, rule='1s', agg_func='mean'):
         if self.data is not None:

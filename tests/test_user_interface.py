@@ -48,5 +48,15 @@ class TestFigure(unittest.TestCase):
         layout = self.figure.show(return_layout=True)
         self.assertIsInstance(layout, LayoutDOM)
 
+    def test_mixed_layout(self):
+        plot1 = self.create_plot()
+        plot2 = self.create_plot()
+        plot3 = self.create_plot()
+        self.figure.add_plot(plot1, position='overlap')
+        self.figure.add_plot(plot2, position='below')
+        self.figure.add_plot(plot3, position='side')
+        layout = self.figure.show(return_layout=True)
+        self.assertIsInstance(layout, LayoutDOM)
+
 if __name__ == '__main__':
     unittest.main()
