@@ -6,7 +6,7 @@ setup(
     description='A library for visualization of high-frequency time series data',
     author='David Levy',
     author_email='dlevy457@gmail.com',
-    url='https://github.com/dlevy233/TimeSeriesViz',  # Replace with your repository URL
+    url='https://github.com/dlevy233/TimeSeriesViz',
     license='MIT',
     packages=find_packages(exclude=['tests', 'docs', 'examples']),  # Exclude non-package directories
     install_requires=[

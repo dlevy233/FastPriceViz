@@ -9,6 +9,7 @@ A Python library for efficient visualization of high-frequency time series data.
 - **Interactive Plots**: Create dynamic visualizations with Bokeh
 - **Downsampling**: Optimize performance with efficient data reduction
 - **Timezone Support**: Proper handling of timezone-aware datetime data
+- **Caching**: Keep recently accessed time ranges in memory for faster repeated access
 
 ## Installation
 
@@ -32,11 +33,15 @@ The TimeSeriesViz API is designed to be flexible and easy to use. Here's an over
 
 ### Data Sources
 
-- `MarketData`: Loads and processes market data from Parquet files.
+- `MarketData`: Loads and processes market data from Parquet files, with caching for improved performance.
   ```python
   data = MarketData(stock_name='AAPL', datetime_range=(start_time, end_time), columns=['price'])
-  data.load_data()
+  data.load_data()  # This will use cache if available
   data.downsample(rule='1s')
+
+  # Optionally, manage the cache
+  MarketData.clear_cache()
+  MarketData.set_cache_size(10)
   ```
 
 ### Visualization
@@ -64,8 +69,6 @@ The `Figure` class supports three layout options:
 - `'overlap'`: Plots are overlaid on the same axes
 - `'below'`: Plots are stacked vertically
 - `'side'`: Plots are placed side by side
-
-### Example
 
 ## Project Structure
 
