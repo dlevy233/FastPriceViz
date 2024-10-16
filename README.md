@@ -203,10 +203,24 @@ To further enhance the performance of the system, consider the following API cha
 
 These alternative API designs and approaches can significantly improve the performance and flexibility of the TimeSeriesViz library, allowing it to handle even larger datasets and more complex visualization scenarios.
 
+
 ## Testing
 
-[... previous testing section remains the same ...]
+The TimeSeriesViz library includes a comprehensive test suite to ensure the reliability and correctness of its components. The tests cover various aspects of the library, including data sources, computation, visualization, and user interface.
 
-## License
+### Running Tests
 
-[... previous license information remains the same ...]
+To run the entire test suite, use the following command from the project root directory:
+
+```
+python -m unittest discover tests
+```
+
+### Test Structure
+
+The test suite is organized into several files, each focusing on a specific component of the library:
+
+1. `test_data_sources.py`: Tests for the data source classes, including `MarketData`.
+2. `test_compute.py`: Tests for the distributed computing functionality using Dask.
+3. `test_visualization.py`: Tests for the visualization components, particularly the `LinePlot` class.
+4. `test_user_interface.py`: Tests for the `Figure` class and its layout capabilities.
