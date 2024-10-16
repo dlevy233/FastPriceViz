@@ -30,6 +30,12 @@ aapl_df = generate_price_data(start_price=100, seed=42)
 # Generate data for GOOGL
 googl_df = generate_price_data(start_price=2500, seed=43)
 
+# Generate data for MSFT
+msft_df = generate_price_data(start_price=300, seed=44)
+
+# Generate data for AMZN
+amzn_df = generate_price_data(start_price=3300, seed=45)
+
 # Save AAPL data to Parquet
 os.makedirs('data/market/AAPL/', exist_ok=True)
 aapl_df.to_parquet('data/market/AAPL/sample.parquet', index=False)
@@ -37,3 +43,11 @@ aapl_df.to_parquet('data/market/AAPL/sample.parquet', index=False)
 # Save GOOGL data to Parquet
 os.makedirs('data/market/GOOGL/', exist_ok=True)
 googl_df.to_parquet('data/market/GOOGL/sample.parquet', index=False)
+
+# Save MSFT data to Parquet
+os.makedirs('data/market/MSFT/', exist_ok=True)
+msft_df.to_parquet('data/market/MSFT/sample.parquet', index=False)
+
+# Save AMZN data to Parquet
+os.makedirs('data/market/AMZN/', exist_ok=True)
+amzn_df.to_parquet('data/market/AMZN/sample.parquet', index=False)

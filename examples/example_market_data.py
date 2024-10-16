@@ -20,17 +20,29 @@ def main():
 
     aapl_source = create_market_data('AAPL', start_time, end_time)
     googl_source = create_market_data('GOOGL', start_time, end_time)
+    msft_source = create_market_data('MSFT', start_time, end_time)
+    amzn_source = create_market_data('AMZN', start_time, end_time)
 
-    # Create Plot
-    plot = LinePlot(title='Stock Prices Comparison', x_axis_label='Time', y_axis_label='Price')
+    # Create Figure
+    fig = Figure()
 
-    # Add multiple lines to the plot with separate y-axes
-    plot.add_line(aapl_source, x_axis='timestamp', y_axis='price', color='blue', legend_label='AAPL')
-    plot.add_line(googl_source, x_axis='timestamp', y_axis='price', color='red', legend_label='GOOGL', y_range_name='googl')
+    # Example 1: Overlapped plots
+    plot1 = LinePlot(title='AAPL and GOOGL (Overlapped)', x_axis_label='Time', y_axis_label='Price')
+    plot1.add_line(aapl_source, x_axis='timestamp', y_axis='price', color='blue', legend_label='AAPL')
+    plot1.add_line(googl_source, x_axis='timestamp', y_axis='price', color='red', legend_label='GOOGL', y_range_name='googl')
+    fig.add_plot(plot1, position='overlap')
+
+    # Example 2: Plot below
+    plot2 = LinePlot(title='MSFT (Below)', x_axis_label='Time', y_axis_label='Price')
+    plot2.add_line(msft_source, x_axis='timestamp', y_axis='price', color='green', legend_label='MSFT')
+    fig.add_plot(plot2, position='below')
+
+    # Example 3: Plot to the side
+    plot3 = LinePlot(title='AMZN (Side)', x_axis_label='Time', y_axis_label='Price')
+    plot3.add_line(amzn_source, x_axis='timestamp', y_axis='price', color='orange', legend_label='AMZN')
+    fig.add_plot(plot3, position='side')
 
     # Display Figure
-    fig = Figure()
-    fig.add_plot(plot)
     fig.show()
 
 if __name__ == "__main__":
