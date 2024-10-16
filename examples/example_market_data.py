@@ -1,4 +1,4 @@
-from data.sources.market_data import MarketData
+from data.sources.object_store_data import MarketData
 from visualization.line_plot import LinePlot
 from api.user_interface import Figure
 from bokeh.models import ColumnDataSource

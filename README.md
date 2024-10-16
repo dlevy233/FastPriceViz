@@ -52,88 +52,161 @@ A Python library for efficient visualization of high-frequency time series data,
    - Plots to the side (AMZN)
    - Zoomed-in view with adaptive resolution (AAPL 1-minute zoom)
 
-## API Design and Usage
+## API Documentation
 
 ### Data Sources
 
-- `MarketData`: Loads and processes market data from Parquet files, with caching and adaptive downsampling for improved performance.
-  ```python
-  data = MarketData(stock_name='AAPL', datetime_range=(start_time, end_time), columns=['price'])
-  df = data.get_data(view_range=(zoom_start, zoom_end))  # Get data with adaptive resolution
-  ```
-
-### Visualization
-
-- `LinePlot`: Creates line plots for time series data.
-  ```python
-  plot = LinePlot(title='Stock Prices', x_axis_label='Time', y_axis_label='Price')
-  plot.add_line(source, x_axis='timestamp', y_axis='price', color='blue', legend_label='AAPL')
-  ```
-
-### Figure Composition
-
-- `Figure`: Combines multiple plots into a single figure with various layout options.
-  ```python
-  fig = Figure()
-  fig.add_plot(plot1, position='overlap')
-  fig.add_plot(plot2, position='below')
-  fig.add_plot(plot3, position='side')
-  fig.show()
-  ```
-
-### Layout Options
-
-The `Figure` class supports three layout options:
-- `'overlap'`: Plots are overlaid on the same axes
-- `'below'`: Plots are stacked vertically, sharing the same x-axis
-- `'side'`: Plots are placed side by side, each with its own x and y axes
-
-### Adaptive Downsampling
-
-The `MarketData` class now supports adaptive downsampling based on the view range:
-- For 1 minute or less: 100ms resolution
-- For 5 minutes or less: 500ms resolution
-- For 1 hour or less: 1s resolution
-- For 1 day or less: 1min resolution
-- For more than 1 day: 5min resolution
-
-This ensures optimal performance and data representation at different zoom levels.
-
-### Caching and Performance
-
-- Manage the cache size:
-  ```python
-  MarketData.set_cache_size(10)  # Set cache to hold 10 items
-  MarketData.clear_cache()  # Clear the entire cache
-  ```
-
-## Project Structure
-
-- `data/`: Data generation and source classes
-  - `generate_test_data.py`: Script to create sample data
-  - `sources/`: Data source implementations
-- `compute/`: Distributed computing utilities (Dask)
-- `visualization/`: Plotting classes and visualization components
-- `api/`: User-facing API for composing visualizations
-- `utils/`: Helper functions and utilities
-- `tests/`: Unit and integration tests
-- `examples/`: Example scripts demonstrating usage
+#### DataSource (Base Class)
 
 ## Performance Considerations
 
-- The library uses Dask for distributed computing, allowing it to handle large datasets efficiently.
-- Adaptive downsampling is implemented to optimize performance at different zoom levels.
-- Caching of recently accessed data ranges improves response times for repeated queries.
-- When visualizing, it's acceptable to miss some data points (e.g., spikes) in favor of better performance, especially at higher zoom levels.
+## Handling Sources with Different Non-Aligned X-axes
+
+When dealing with data sources that have different, non-aligned X-axes, consider the following approaches:
+
+1. **Resampling**: Resample all data sources to a common time interval. This approach works well when the differences in time intervals are small or when some loss of precision is acceptable.
+
+   ```python
+   def align_sources(*sources, common_interval='1s'):
+       aligned_sources = []
+       for source in sources:
+           aligned_sources.append(source.resample(common_interval).mean())
+       return aligned_sources
+   ```
+
+2. **Interpolation**: For sources with different but close time points, use interpolation to estimate values at matching timestamps.
+
+   ```python
+   def interpolate_sources(*sources, method='linear'):
+       # Combine all unique timestamps
+       all_timestamps = sorted(set().union(*[source.index for source in sources]))
+       interpolated_sources = []
+       for source in sources:
+           interpolated_sources.append(source.reindex(all_timestamps).interpolate(method=method))
+       return interpolated_sources
+   ```
+
+3. **Flexible Plotting**: Implement plotting functions that can handle multiple X-axes, allowing each data source to maintain its original timestamps.
+
+   ```python
+   def plot_multi_axis(sources, labels):
+       fig, ax1 = plt.subplots()
+       for i, (source, label) in enumerate(zip(sources, labels)):
+           if i == 0:
+               ax = ax1
+           else:
+               ax = ax1.twinx()
+           ax.plot(source.index, source.values, label=label)
+           ax.set_ylabel(label)
+       plt.title('Multi-Source Plot with Different X-axes')
+       plt.legend()
+       plt.show()
+   ```
+
+4. **Time Range Bucketing**: For vastly different time scales, consider bucketing the data into larger time ranges and comparing the aggregated statistics.
+
+## Alternative API Designs for Improved Performance
+
+To further enhance the performance of the system, consider the following API changes and design alternatives:
+
+1. **Lazy Evaluation**: Implement a lazy evaluation system where operations on data are not performed until explicitly requested.
+
+   ```python
+   class LazyDataSource:
+       def __init__(self, source):
+           self.source = source
+           self.operations = []
+
+       def transform(self, operation):
+           self.operations.append(operation)
+           return self
+
+       def compute(self):
+           result = self.source
+           for operation in self.operations:
+               result = operation(result)
+           return result
+   ```
+
+2. **Streaming API**: Design an API that supports streaming data processing, allowing for real-time updates and reducing memory usage.
+
+   ```python
+   class StreamingDataSource:
+       def __init__(self, source_generator):
+           self.source_generator = source_generator
+
+       def process_stream(self, chunk_size=1000):
+           for chunk in self.source_generator(chunk_size):
+               yield self.process_chunk(chunk)
+
+       def process_chunk(self, chunk):
+           # Process the chunk of data
+           return processed_chunk
+   ```
+
+3. **Distributed Processing**: Extend the API to support distributed processing across multiple nodes.
+
+   ```python
+   from dask.distributed import Client
+
+   class DistributedDataSource:
+       def __init__(self, sources):
+           self.sources = sources
+           self.client = Client()
+
+       def process_distributed(self):
+           futures = [self.client.submit(self.process_source, source) for source in self.sources]
+           return self.client.gather(futures)
+
+       def process_source(self, source):
+           # Process individual source
+           return processed_data
+   ```
+
+4. **Adaptive Resolution**: Implement an API that automatically adjusts the data resolution based on the viewing window or available computational resources.
+
+   ```python
+   class AdaptiveResolutionSource:
+       def __init__(self, source):
+           self.source = source
+
+       def get_data(self, view_range, max_points=1000):
+           data_range = self.source.get_data_range()
+           if (view_range[1] - view_range[0]) / (data_range[1] - data_range[0]) < 0.1:
+               return self.source.get_downsampled_data(view_range, max_points)
+           else:
+               return self.source.get_full_resolution_data(view_range)
+   ```
+
+5. **Precomputed Aggregations**: Design an API that supports precomputed aggregations at various time scales to speed up common queries.
+
+   ```python
+   class PrecomputedAggregationSource:
+       def __init__(self, source):
+           self.source = source
+           self.aggregations = {
+               '1h': self.precompute_aggregation('1h'),
+               '1d': self.precompute_aggregation('1d'),
+               '1w': self.precompute_aggregation('1w')
+           }
+
+       def precompute_aggregation(self, interval):
+           # Precompute and store aggregations
+           pass
+
+       def get_data(self, interval):
+           if interval in self.aggregations:
+               return self.aggregations[interval]
+           else:
+               return self.source.get_data().resample(interval).mean()
+   ```
+
+These alternative API designs and approaches can significantly improve the performance and flexibility of the TimeSeriesViz library, allowing it to handle even larger datasets and more complex visualization scenarios.
 
 ## Testing
 
-To run the test suite, use the following command from the project root directory:
-```
-python -m unittest discover tests
-```
-
+[... previous testing section remains the same ...]
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+[... previous license information remains the same ...]
