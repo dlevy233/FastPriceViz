@@ -3,3 +3,8 @@ numpy
 dask[complete]
 bokeh
 pyarrow
+pydantic
+fastparquet
+tqdm 
+diskcache
+tenacity
