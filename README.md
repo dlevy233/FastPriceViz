@@ -1,6 +1,6 @@
 # PriceViz
 
-PriceViz is a Python library designed for the visualization and analysis of large-scale time series data, with a particular focus on financial market data. It has two key offerings: parallelized downsampling of massive datasets so that they can fit into memory, and then visualization of key features (within and across tickers) in a flexible format.
+PriceViz is a Python library designed for the processing, visualization, and analysis of large-scale time series data, with a particular focus on financial market data. It has two key offerings: parallelized downsampling of massive datasets so that they can fit into memory, and then visualization (or any sort of analysis) of key features (within and across tickers) in a flexible format.
 
 ## Installation
 
@@ -55,3 +55,12 @@ chart = plot_chart(
 ```
 And then you can display the result with `open line_chart.html` from the CLI.
 
+## Future improvements
+
+- Increase the usage of lazy evaluation. Right now lazy evaluation is just used for downsampling until the dataframe is small enough to load into memory, but we can keep the data in a lazy state while we're plotting it or doing any sort of analysis. To do this, we would construct a set of supported transactions (which can be composed) and implement a lazy transaction execution engine (thankfully, frameworks like Dask make this relatively easy). A functional style for the API would be ideal for this.
+- Improve the customizability and visual appeal of the plots, add more plot types, and support more output format options (e.g. send to some remote database).
+- Improve the caching logic, using [cachey](https://github.com/dask/cachey) as inspiration (i.e. take both computation time and storage space into account, as well as frequency and recency of usage). And we can use the cloud for larger-scale caching.
+- Support GPUs for greater parallelism, both for the data processing and data analysis (e.g. ML model training) tasks.
+- Support parallelizing across multiple servers.
+- Implement a far more abstract and flexible data model, supporting seamless usage of PriceViz across different types of data sources (e.g. SQL databases, NoSQL databases, Parquet files, etc.) with some kind of schema specification.
+- Improve DevEx by adding an interactive option. This allows a user to "dive into" using the module without much mental overhead, and then during runtime the module will ask the user how they would like to handle things like unaligned x-axes, unbalanced data, etc.
