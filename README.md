@@ -5,8 +5,8 @@ PriceViz is a Python library designed for the processing, visualization, and ana
 ## Installation
 
 ```bash
-git clone https://github.com/dlevy233/TimeSeriesViz.git
-cd TimeSeriesViz
+git clone https://github.com/dlevy233/FastPriceViz.git
+cd FastPriceViz
 python -m venv venv
 source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 pip install -r requirements.txt
