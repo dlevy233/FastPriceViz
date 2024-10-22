@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='TimeSeriesViz',
+    name='FastPriceViz',
     version='0.1.0',
     description='A library for visualization of high-frequency time series data',
     author='David Levy',
     author_email='dlevy457@gmail.com',
-    url='https://github.com/dlevy233/TimeSeriesViz',
+    url='https://github.com/dlevy233/FastPriceViz',
     license='MIT',
     packages=find_packages(exclude=['tests', 'docs', 'examples']),  # Exclude non-package directories
     install_requires=[
@@ -31,6 +31,6 @@ setup(
     include_package_data=True,  # Include files specified in MANIFEST.in
     keywords='time series visualization dask bokeh',
     project_urls={
-        'Source': 'https://github.com/dlevy233/TimeSeriesViz',
+        'Source': 'https://github.com/dlevy233/FastPriceViz',
     },
 )
